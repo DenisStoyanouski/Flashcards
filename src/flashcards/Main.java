@@ -28,9 +28,11 @@ public class Main {
                     break;
                 case "export" : ;
                     break;
-                case "ask" : ;
+                case "ask" : ask();
                     break;
-                case "exit" : ;
+                case "exit" :
+                    System.out.println("Bye bye!");
+                    System.exit(0);
                     break;
                 default:
                     System.out.println("Unknown command");
@@ -39,18 +41,13 @@ public class Main {
         } while(!"exit".equals(item));
     }
 
-    /*private static void getNumber() {
-        System.out.println("Input the number of cards:");
-        number = Integer.parseInt(input());
-    }*/
-
     private static String input() {
         return scanner.nextLine();
     }
 
     private static void addCard() {
-        String term = null;
-        String definition = null;
+        String term;
+        String definition;
         System.out.println("the card:");
             do {
                 term = input();
@@ -68,24 +65,39 @@ public class Main {
             cards.put(term, definition);
     }
 
-    private static void checkCards() {
-        for (String term : cards.keySet()) {
-            System.out.printf("Print the definition of \"%s\":%n", term);
-            String answer = input();
-            if (Objects.equals(answer, cards.get(term))) {
-                System.out.println("Correct!");
-            } else if (cards.containsValue(answer)) {
-                String termSecond = null;
-                for (var entry : cards.entrySet()) {
-                    if (Objects.equals(entry.getValue(), answer)) {
-                        termSecond = entry.getKey();
-                    }
-                }
-                System.out.printf("Wrong. The right answer is \"%s\", but your definition is correct " +
-                        "for \"%s\"%n", cards.get(term), termSecond);
-            } else {
-                System.out.printf("Wrong. The right answer is \"%s\"%n", cards.get(term));
+    private static void ask() {
+        int times = 0;
+        System.out.println("How many times to ask?");
+        boolean check = true;
+        do {
+            try {
+                times = Integer.parseInt(input());
+            } catch (NumberFormatException e) {
+                System.out.println("I need number. Try again:");
+                check = false;
             }
-        }
+        } while(!check);
+        do {
+            for (String term : cards.keySet()) {
+                System.out.printf("Print the definition of \"%s\":%n", term);
+                String answer = input();
+                if (Objects.equals(answer, cards.get(term))) {
+                    System.out.println("Correct!");
+                } else if (cards.containsValue(answer)) {
+                    String termSecond = null;
+                    for (var entry : cards.entrySet()) {
+                        if (Objects.equals(entry.getValue(), answer)) {
+                            termSecond = entry.getKey();
+                        }
+                    }
+                    System.out.printf("Wrong. The right answer is \"%s\", but your definition is correct " +
+                            "for \"%s\"%n", cards.get(term), termSecond);
+                } else {
+                    System.out.printf("Wrong. The right answer is \"%s\"%n", cards.get(term));
+                }
+            }
+            times--;
+        } while(times != 0);
+
     }
 }
