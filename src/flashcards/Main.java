@@ -65,10 +65,13 @@ public class Main {
 
     private static void getHardestCard() {
         List<String> hardestCards = new ArrayList<>();
-        int max = Collections.max(statistics.values());
-        for (var entry : statistics.entrySet()) {
-            if (entry.getValue() == max) {
-                hardestCards.add(String.format("\"%s\"", entry.getKey()));
+        int max = 0;
+        if (!statistics.isEmpty()) {
+            max = Collections.max(statistics.values());
+            for (var entry : statistics.entrySet()) {
+                if (entry.getValue() == max) {
+                    hardestCards.add(String.format("\"%s\"", entry.getKey()));
+                }
             }
         }
 
@@ -77,7 +80,7 @@ public class Main {
         } else if (hardestCards.size() == 1){
             output(String.format("The hardest card is %s. You have %d errors answering it.%n", hardestCards.get(0), max));
         } else {
-            output(String.format("The hardest cards are %s. You have %d errors answering it.%n", hardestCards.toString().replaceAll("]\\[", "")));
+            output(String.format("The hardest cards are %s. You have %d errors answering them.%n", hardestCards.toString().replaceAll("[]\\[]", ""), max * hardestCards.size()));
         }
     }
 
@@ -86,7 +89,9 @@ public class Main {
         String fileName = input();
         file = new File(String.format("./%s", fileName));
         try (FileWriter fileWriter = new FileWriter(file)) {
-             fileWriter.write(log.toString());
+            output("\n");
+            output("\n");
+            fileWriter.write(log.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -146,7 +151,7 @@ public class Main {
                 while(scan.hasNextLine()) {
                     String term = scan.nextLine();
                     String determination = scan.nextLine();
-                    int hardness = scan.nextInt();
+                    int hardness = Integer.parseInt(scan.nextLine().trim());
                     cards.put(term, determination);
                     statistics.put(term, hardness);
                     count++;
@@ -171,7 +176,7 @@ public class Main {
             for (var entry : cards.entrySet()) {
                 writer.write(entry.getKey() + "\n");
                 writer.write(entry.getValue() + "\n");
-                writer.write(statistics.get(entry.getKey() + "\n"));
+                writer.write(statistics.get(entry.getKey()) + "\n");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -191,7 +196,7 @@ public class Main {
                 output(String.format("Print the definition of \"%s\":%n", term));
                 String answer = input();
                 if (Objects.equals(answer, cards.get(term))) {
-                    System.out.println("Correct!");
+                    output(String.format("Correct!%n"));
                 } else if (cards.containsValue(answer)) {
                     String termSecond = null;
                     for (var entry : cards.entrySet()) {
