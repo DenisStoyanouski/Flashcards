@@ -22,7 +22,7 @@ public class Main {
             switch (item) {
                 case "add" : addCard();
                     break;
-                case "remove" : ;
+                case "remove" : remove();
                     break;
                 case "import" : ;
                     break;
@@ -62,6 +62,17 @@ public class Main {
             }
         cards.put(term, definition);
         System.out.printf("The pair (\"%s\":\"%s\") has been added.%n", term, definition);
+    }
+
+    private static void remove() {
+        System.out.println("Which card?");
+        String term = input();
+        if (cards.containsKey(term)) {
+            cards.remove(term);
+            System.out.println("The card has been removed.");
+        } else {
+            System.out.printf("Can't remove \"%s\": there is no such card.%n", term);
+        }
     }
 
     private static void ask() {
