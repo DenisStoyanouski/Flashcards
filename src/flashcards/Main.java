@@ -1,12 +1,18 @@
 package flashcards;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Main {
 
-    static Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in);
 
-    static Map<String, String> cards = new LinkedHashMap<>();
+    private static Map<String, String> cards = new LinkedHashMap<>();
+
+    private static File file;
 
     public static void main(String[] args) {
         startMenu();
@@ -24,7 +30,7 @@ public class Main {
                     break;
                 case "remove" : remove();
                     break;
-                case "import" : ;
+                case "import" : importCards();
                     break;
                 case "export" : ;
                     break;
@@ -72,6 +78,26 @@ public class Main {
             System.out.println("The card has been removed.");
         } else {
             System.out.printf("Can't remove \"%s\": there is no such card.%n", term);
+        }
+    }
+
+    private static void importCards() {
+        System.out.println("File name:");
+        String fileName = input();
+        file = new File(String.format("./%s", fileName));
+        if (!file.exists()) {
+            System.out.println("File not found.");
+        } else {
+            int count = cards.size();
+            try(FileWriter writer = new FileWriter(file, true)) {
+                for (var entry : cards.entrySet()) {
+                    writer.write(entry.getKey() + "\n");
+                    writer.write(entry.getValue() + "\n");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.printf("%d cards have been loaded.%n", count);
         }
     }
 
