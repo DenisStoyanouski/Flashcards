@@ -26,7 +26,7 @@ public class Main {
     private static void startMenu() {
         String item = "";
         do {
-            output(String.format("Input the action (add, remove, import, export, ask, exit, log, hardest card):%n"));
+            output(String.format("Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):%n"));
             item = input();
             switch (item) {
                 case "add" : addCard();
@@ -43,6 +43,8 @@ public class Main {
                     break;
                 case "hardest card" : getHardestCard();
                     break;
+                case "reset stats" : resetStats();
+                    break;
                 case "exit" :
                     output(String.format("Bye bye!%n"));
                     System.exit(0);
@@ -54,6 +56,13 @@ public class Main {
         } while(!"exit".equals(item));
     }
 
+    private static void resetStats() {
+        for (String key : statistics.keySet()) {
+            statistics.replace(key, 0);
+        }
+        output(String.format("Card statistics have been reset.%n"));
+    }
+
     private static void getHardestCard() {
         StringBuilder hardestCards = new StringBuilder();
         int max = Collections.max(statistics.values());
@@ -63,10 +72,10 @@ public class Main {
             }
         }
         hardestCards.delete(hardestCards.length() - 2, hardestCards.length());
-        if (hardestCards.toString().isEmpty()) {
+        if (hardestCards.toString().isEmpty() || max == 0) {
             output(String.format("There are no cards with errors.%n"));
         } else {
-            output(String.format("The hardest card is %s. You have %d errors answering it", hardestCards, max));
+            output(String.format("The hardest card is %s. You have %d errors answering it.%n", hardestCards, max));
         }
     }
 
