@@ -49,20 +49,19 @@ public class Main {
         String term;
         String definition;
         System.out.println("the card:");
-            do {
-                term = input();
-                if (cards.containsKey(term)) {
-                    System.out.printf("The term \"%s\" already exists. Try again:%n", term);
-                }
-            } while (cards.containsKey(term));
-            System.out.println("The definition of card:");
-            do {
-                definition = input();
-                if (cards.containsValue(definition)) {
-                    System.out.printf("The definition \"%s\" already exists. Try again:%n", definition);
-                }
-            } while (cards.containsValue(definition));
-            cards.put(term, definition);
+        term = input();
+            if (cards.containsKey(term)) {
+                System.out.printf("The term \"%s\" already exists.%n", term);
+                return;
+            }
+        System.out.println("The definition of the card:");
+        definition = input();
+            if (cards.containsValue(definition)) {
+                System.out.printf("The definition \"%s\" already exists.%n", definition);
+                return;
+            }
+        cards.put(term, definition);
+        System.out.printf("The pair (\"%s\":\"%s\") has been added.%n", term, definition);
     }
 
     private static void ask() {
