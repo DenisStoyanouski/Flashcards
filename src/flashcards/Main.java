@@ -11,9 +11,34 @@ public class Main {
     static Map<String, String> cards = new LinkedHashMap<>();
 
     public static void main(String[] args) {
-        getNumber();
+        startMenu();
 
 
+    }
+
+    private static void startMenu() {
+        String item = "";
+        do {
+            System.out.println("Input the action (add, remove, import, export, ask, exit):");
+            item = input();
+            switch (item) {
+                case "add" : ;
+                    break;
+                case "remove" : ;
+                    break;
+                case "import" : ;
+                    break;
+                case "export" : ;
+                    break;
+                case "ask" : ;
+                    break;
+                case "exit" : ;
+                    break;
+                default:
+                    System.out.println("Unknown command");
+                    break;
+            }
+        } while(!"exit".equals(item));
     }
 
     private static void getNumber() {
