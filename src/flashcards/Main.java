@@ -13,6 +13,8 @@ public class Main {
 
     private static final Map<String, String> cards = new LinkedHashMap<>();
 
+    private static final Map<String, Integer> statistics = new HashMap<>();
+
     private static StringBuilder log = new StringBuilder();
 
     private static File file;
@@ -24,7 +26,7 @@ public class Main {
     private static void startMenu() {
         String item = "";
         do {
-            output(String.format("Input the action (add, remove, import, export, ask, exit, log):%n"));
+            output(String.format("Input the action (add, remove, import, export, ask, exit, log, hardest card):%n"));
             item = input();
             switch (item) {
                 case "add" : addCard();
@@ -38,7 +40,9 @@ public class Main {
                 case "ask" : ask();
                     break;
                 case "log" : log();
-                break;
+                    break;
+                case "hardest card" : getHardestCard();
+                    break;
                 case "exit" :
                     output(String.format("Bye bye!%n"));
                     System.exit(0);
@@ -48,6 +52,22 @@ public class Main {
                     break;
             }
         } while(!"exit".equals(item));
+    }
+
+    private static void getHardestCard() {
+        StringBuilder hardestCards = new StringBuilder();
+        int max = Collections.max(statistics.values());
+        for (var entry : statistics.entrySet()) {
+            if (entry.getValue() == max) {
+                hardestCards.append(String.format("\"%s\"", entry.getKey())).append(", ");
+            }
+        }
+        hardestCards.delete(hardestCards.length() - 2, hardestCards.length());
+        if (hardestCards.toString().isEmpty()) {
+            output(String.format("There are no cards with errors.%n"));
+        } else {
+            output(String.format("The hardest card is %s. You have %d errors answering it", hardestCards, max));
+        }
     }
 
     private static void log() {
@@ -89,6 +109,7 @@ public class Main {
                 return;
             }
         cards.put(term, definition);
+        statistics.put(term, 0);
         output(String.format("The pair (\"%s\":\"%s\") has been added.%n", term, definition));
     }
 
@@ -166,8 +187,10 @@ public class Main {
                     }
                     output(String.format("Wrong. The right answer is \"%s\", but your definition is correct " +
                             "for \"%s\"%n", cards.get(term), termSecond));
+                    statistics.put(term, statistics.get(term) + 1);
                 } else {
                     output(String.format("Wrong. The right answer is \"%s\"%n", cards.get(term)));
+                    statistics.put(term, statistics.get(term) + 1);
                 }
                 times--;
             }
