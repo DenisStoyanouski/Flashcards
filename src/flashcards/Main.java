@@ -64,18 +64,20 @@ public class Main {
     }
 
     private static void getHardestCard() {
-        StringBuilder hardestCards = new StringBuilder();
+        List<String> hardestCards = new ArrayList<>();
         int max = Collections.max(statistics.values());
         for (var entry : statistics.entrySet()) {
             if (entry.getValue() == max) {
-                hardestCards.append(String.format("\"%s\"", entry.getKey())).append(", ");
+                hardestCards.add(String.format("\"%s\"", entry.getKey()));
             }
         }
-        hardestCards.delete(hardestCards.length() - 2, hardestCards.length());
-        if (hardestCards.toString().isEmpty() || max == 0) {
+
+        if (hardestCards.size() == 0 || max == 0) {
             output(String.format("There are no cards with errors.%n"));
+        } else if (hardestCards.size() == 1){
+            output(String.format("The hardest card is %s. You have %d errors answering it.%n", hardestCards.get(0), max));
         } else {
-            output(String.format("The hardest card is %s. You have %d errors answering it.%n", hardestCards, max));
+            output(String.format("The hardest cards are %s. You have %d errors answering it.%n", hardestCards.toString().replaceAll("]\\[", "")));
         }
     }
 
@@ -144,7 +146,9 @@ public class Main {
                 while(scan.hasNextLine()) {
                     String term = scan.nextLine();
                     String determination = scan.nextLine();
+                    int hardness = scan.nextInt();
                     cards.put(term, determination);
+                    statistics.put(term, hardness);
                     count++;
                 }
                 output(String.format("%d cards have been loaded.%n", count));
@@ -167,6 +171,7 @@ public class Main {
             for (var entry : cards.entrySet()) {
                 writer.write(entry.getKey() + "\n");
                 writer.write(entry.getValue() + "\n");
+                writer.write(statistics.get(entry.getKey() + "\n"));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
