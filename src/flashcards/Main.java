@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Main {
@@ -15,18 +16,18 @@ public class Main {
 
     private static final Map<String, String> cards = new LinkedHashMap<>();
 
+    private static final StringBuilder log = new StringBuilder();
+
     private static File file;
 
     public static void main(String[] args) {
         startMenu();
-
-
     }
 
     private static void startMenu() {
         String item = "";
         do {
-            System.out.println("Input the action (add, remove, import, export, ask, exit):");
+            output(String.format("Input the action (add, remove, import, export, ask, exit):%n"));
             item = input();
             switch (item) {
                 case "add" : addCard();
@@ -40,52 +41,59 @@ public class Main {
                 case "ask" : ask();
                     break;
                 case "exit" :
-                    System.out.println("Bye bye!");
+                    output(String.format("Bye bye!%n"));
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("Unknown command");
+                    output(String.format("Unknown command%n"));
                     break;
             }
         } while(!"exit".equals(item));
     }
 
     private static String input() {
-        return scanner.nextLine();
+        String input = scanner.nextLine();
+        log.append(LocalDateTime.now()).append(" input ").append(input);
+        return input;
+    }
+
+    private static void output(String str) {
+        log.append(LocalDateTime.now()).append(" output ").append(str);
+        System.out.printf(str);
     }
 
     private static void addCard() {
         String term;
         String definition;
-        System.out.println("the card:");
+        output(String.format("the card:%n"));
         term = input();
             if (cards.containsKey(term)) {
-                System.out.printf("The term \"%s\" already exists.%n", term);
+                output(String.format("The card \"%s\" already exists.%n", term));
                 return;
             }
-        System.out.println("The definition of the card:");
+        output("The definition of the card:%n");
         definition = input();
             if (cards.containsValue(definition)) {
-                System.out.printf("The definition \"%s\" already exists.%n", definition);
+                output(String.format("The definition \"%s\" already exists.%n", definition));
                 return;
             }
         cards.put(term, definition);
-        System.out.printf("The pair (\"%s\":\"%s\") has been added.%n", term, definition);
+        output(String.format("The pair (\"%s\":\"%s\") has been added.%n", term, definition));
     }
 
     private static void remove() {
-        System.out.println("Which card?");
+        output(String.format("Which card?%n"));
         String term = input();
         if (cards.containsKey(term)) {
             cards.remove(term);
-            System.out.println("The card has been removed.");
+            output(String.format("The card has been removed.%n"));
         } else {
-            System.out.printf("Can't remove \"%s\": there is no such card.%n", term);
+            output(String.format("Can't remove \"%s\": there is no such card.%n", term));
         }
     }
 
     private static void importCards() {
-        System.out.println("File name:");
+        output(String.format("File name:%n"));
         String fileName = input();
         int count = 0;
         try {
@@ -98,19 +106,19 @@ public class Main {
                     cards.put(term, determination);
                     count++;
                 }
-                System.out.printf("%d cards have been loaded.%n", count);
+                output(String.format("%d cards have been loaded.%n", count));
                 System.out.println();
             } catch (FileNotFoundException e) {
-                System.out.println("File not found.");
+                output(String.format("File not found.%n"));
             }
         } catch (InvalidPathException e) {
-            System.out.println("File not found.");
+            output(String.format("File not found.%n"));
         }
 
     }
 
     private static void exportCards() {
-        System.out.println("File name:");
+        output(String.format("File name:%n"));
         String fileName = input();
         file = new File(String.format("./%s", fileName));
         int count = cards.size();
@@ -122,19 +130,19 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.printf("%d cards have been saved.%n", count);
+        output(String.format("%d cards have been saved.%n", count));
     }
 
     private static void ask() {
         int times = 0;
-        System.out.println("How many times to ask?");
+        output(String.format("How many times to ask?%n"));
         times = Integer.parseInt(input());
         do {
             for (String term : cards.keySet()) {
                 if (times == 0) {
                     break;
                 }
-                System.out.printf("Print the definition of \"%s\":%n", term);
+                output(String.format("Print the definition of \"%s\":%n", term));
                 String answer = input();
                 if (Objects.equals(answer, cards.get(term))) {
                     System.out.println("Correct!");
@@ -145,10 +153,10 @@ public class Main {
                             termSecond = entry.getKey();
                         }
                     }
-                    System.out.printf("Wrong. The right answer is \"%s\", but your definition is correct " +
-                            "for \"%s\"%n", cards.get(term), termSecond);
+                    output(String.format("Wrong. The right answer is \"%s\", but your definition is correct " +
+                            "for \"%s\"%n", cards.get(term), termSecond));
                 } else {
-                    System.out.printf("Wrong. The right answer is \"%s\"%n", cards.get(term));
+                    output(String.format("Wrong. The right answer is \"%s\"%n", cards.get(term)));
                 }
                 times--;
             }
