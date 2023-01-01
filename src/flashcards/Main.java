@@ -1,16 +1,19 @@
 package flashcards;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class Main {
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 
-    private static Map<String, String> cards = new LinkedHashMap<>();
+    private static final Map<String, String> cards = new LinkedHashMap<>();
 
     private static File file;
 
@@ -32,7 +35,7 @@ public class Main {
                     break;
                 case "import" : importCards();
                     break;
-                case "export" : ;
+                case "export" : exportCards();
                     break;
                 case "ask" : ask();
                     break;
@@ -84,37 +87,53 @@ public class Main {
     private static void importCards() {
         System.out.println("File name:");
         String fileName = input();
-        file = new File(String.format("./%s", fileName));
-        if (!file.exists()) {
-            System.out.println("File not found.");
-        } else {
-            int count = cards.size();
-            try(FileWriter writer = new FileWriter(file, true)) {
-                for (var entry : cards.entrySet()) {
-                    writer.write(entry.getKey() + "\n");
-                    writer.write(entry.getValue() + "\n");
+        int count = 0;
+        try {
+            Path p = Paths.get(fileName);
+            file = new File(String.valueOf(p));
+            try(Scanner scan = new Scanner(file)) {
+                while(scan.hasNextLine()) {
+                    String term = scan.nextLine();
+                    String determination = scan.nextLine();
+                    cards.put(term, determination);
+                    count++;
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.printf("%d cards have been loaded.%n", count);
+                System.out.println();
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found.");
             }
-            System.out.printf("%d cards have been loaded.%n", count);
+        } catch (InvalidPathException e) {
+            System.out.println("File not found.");
         }
+
+    }
+
+    private static void exportCards() {
+        System.out.println("File name:");
+        String fileName = input();
+        file = new File(String.format("./%s", fileName));
+        int count = cards.size();
+        try(FileWriter writer = new FileWriter(file)) {
+            for (var entry : cards.entrySet()) {
+                writer.write(entry.getKey() + "\n");
+                writer.write(entry.getValue() + "\n");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.printf("%d cards have been saved.%n", count);
     }
 
     private static void ask() {
         int times = 0;
         System.out.println("How many times to ask?");
-        boolean check = true;
-        do {
-            try {
-                times = Integer.parseInt(input());
-            } catch (NumberFormatException e) {
-                System.out.println("I need number. Try again:");
-                check = false;
-            }
-        } while(!check);
+        times = Integer.parseInt(input());
         do {
             for (String term : cards.keySet()) {
+                if (times == 0) {
+                    break;
+                }
                 System.out.printf("Print the definition of \"%s\":%n", term);
                 String answer = input();
                 if (Objects.equals(answer, cards.get(term))) {
@@ -131,9 +150,8 @@ public class Main {
                 } else {
                     System.out.printf("Wrong. The right answer is \"%s\"%n", cards.get(term));
                 }
+                times--;
             }
-            times--;
         } while(times != 0);
-
     }
 }
