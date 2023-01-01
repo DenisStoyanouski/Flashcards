@@ -6,8 +6,6 @@ public class Main {
 
     static Scanner scanner = new Scanner(System.in);
 
-    static int number = 0;
-
     static Map<String, String> cards = new LinkedHashMap<>();
 
     public static void main(String[] args) {
@@ -22,7 +20,7 @@ public class Main {
             System.out.println("Input the action (add, remove, import, export, ask, exit):");
             item = input();
             switch (item) {
-                case "add" : ;
+                case "add" : addCard();
                     break;
                 case "remove" : ;
                     break;
@@ -41,30 +39,26 @@ public class Main {
         } while(!"exit".equals(item));
     }
 
-    private static void getNumber() {
+    /*private static void getNumber() {
         System.out.println("Input the number of cards:");
         number = Integer.parseInt(input());
-        createCards();
-    }
+    }*/
 
     private static String input() {
         return scanner.nextLine();
     }
 
-    private static void createCards() {
-        int count = 1;
+    private static void addCard() {
         String term = null;
         String definition = null;
-        while (number != 0) {
-            System.out.printf("Card #%d%n", count);
+        System.out.println("the card:");
             do {
                 term = input();
                 if (cards.containsKey(term)) {
                     System.out.printf("The term \"%s\" already exists. Try again:%n", term);
                 }
             } while (cards.containsKey(term));
-
-            System.out.printf("The definition for card #%d:%n", count);
+            System.out.println("The definition of card:");
             do {
                 definition = input();
                 if (cards.containsValue(definition)) {
@@ -72,10 +66,6 @@ public class Main {
                 }
             } while (cards.containsValue(definition));
             cards.put(term, definition);
-            count++;
-            number--;
-        }
-        checkCards();
     }
 
     private static void checkCards() {
