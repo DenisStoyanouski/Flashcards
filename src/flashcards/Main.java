@@ -1,9 +1,6 @@
 package flashcards;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +13,7 @@ public class Main {
 
     private static final Map<String, String> cards = new LinkedHashMap<>();
 
-    private static final StringBuilder log = new StringBuilder();
+    private static StringBuilder log = new StringBuilder();
 
     private static File file;
 
@@ -27,7 +24,7 @@ public class Main {
     private static void startMenu() {
         String item = "";
         do {
-            output(String.format("Input the action (add, remove, import, export, ask, exit):%n"));
+            output(String.format("Input the action (add, remove, import, export, ask, exit, log):%n"));
             item = input();
             switch (item) {
                 case "add" : addCard();
@@ -40,6 +37,8 @@ public class Main {
                     break;
                 case "ask" : ask();
                     break;
+                case "log" : log();
+                break;
                 case "exit" :
                     output(String.format("Bye bye!%n"));
                     System.exit(0);
@@ -51,9 +50,21 @@ public class Main {
         } while(!"exit".equals(item));
     }
 
+    private static void log() {
+        output(String.format("File name:%n"));
+        String fileName = input();
+        file = new File(String.format("./%s", fileName));
+        try (FileWriter fileWriter = new FileWriter(file)) {
+             fileWriter.write(log.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        output(String.format("The log has been saved.%n"));
+    }
+
     private static String input() {
         String input = scanner.nextLine();
-        log.append(LocalDateTime.now()).append(" input ").append(input);
+        log.append(LocalDateTime.now()).append(" input ").append(input).append("\n");
         return input;
     }
 
@@ -71,7 +82,7 @@ public class Main {
                 output(String.format("The card \"%s\" already exists.%n", term));
                 return;
             }
-        output("The definition of the card:%n");
+        output(String.format("The definition of the card:%n"));
         definition = input();
             if (cards.containsValue(definition)) {
                 output(String.format("The definition \"%s\" already exists.%n", definition));
