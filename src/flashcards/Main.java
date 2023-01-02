@@ -15,11 +15,39 @@ public class Main {
 
     private static final Map<String, Integer> statistics = new HashMap<>();
 
-    private static StringBuilder log = new StringBuilder();
+    private static final StringBuilder log = new StringBuilder();
 
     private static File file;
 
+    private static String fileImportName;
+
+    private static String fileExportName;
+
     public static void main(String[] args) {
+        getArguments(args.clone());
+        startMenu();
+    }
+
+    private static void getArguments(String[] clone) {
+        if (clone.length == 2) {
+            if ("-import".equals(clone[0])) {
+                fileImportName = clone[1];
+                importCards();
+            }
+            if ("-export".equals(clone[0])) {
+                fileExportName = clone[1];
+            }
+        }
+
+        if (clone.length == 4) {
+            if ("-import".equals(clone[0])) {
+                fileImportName = clone[1];
+                importCards();
+            }
+            if ("-export".equals(clone[2])) {
+                fileExportName = clone[3];
+            }
+        }
         startMenu();
     }
 
@@ -46,7 +74,11 @@ public class Main {
                 case "reset stats" : resetStats();
                     break;
                 case "exit" :
-                    output(String.format("Bye bye!%n"));
+                    if (fileExportName != null) {
+                        exportCards();
+                    } else {
+                        output(String.format("Bye bye!%n"));
+                    }
                     System.exit(0);
                     break;
                 default:
@@ -141,11 +173,14 @@ public class Main {
     }
 
     private static void importCards() {
-        output(String.format("File name:%n"));
-        String fileName = input();
+        if (fileImportName == null) {
+            output(String.format("File name:%n"));
+            fileImportName = input();
+        }
+
         int count = 0;
         try {
-            Path p = Paths.get(fileName);
+            Path p = Paths.get(fileImportName);
             file = new File(String.valueOf(p));
             try(Scanner scan = new Scanner(file)) {
                 while(scan.hasNextLine()) {
@@ -168,9 +203,11 @@ public class Main {
     }
 
     private static void exportCards() {
-        output(String.format("File name:%n"));
-        String fileName = input();
-        file = new File(String.format("./%s", fileName));
+        if (fileExportName == null) {
+            output(String.format("File name:%n"));
+            fileExportName = input();
+        }
+        file = new File(String.format("./%s", fileExportName));
         int count = cards.size();
         try(FileWriter writer = new FileWriter(file)) {
             for (var entry : cards.entrySet()) {
