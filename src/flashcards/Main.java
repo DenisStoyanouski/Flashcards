@@ -47,6 +47,14 @@ public class Main {
             if ("-export".equals(clone[2])) {
                 fileExportName = clone[3];
             }
+
+            if ("-import".equals(clone[2])) {
+                fileImportName = clone[3];
+                importCards();
+            }
+            if ("-export".equals(clone[0])) {
+                fileExportName = clone[1];
+            }
         }
         startMenu();
     }
@@ -76,9 +84,8 @@ public class Main {
                 case "exit" :
                     if (fileExportName != null) {
                         exportCards();
-                    } else {
-                        output(String.format("Bye bye!%n"));
                     }
+                    output(String.format("Bye bye!%n"));
                     System.exit(0);
                     break;
                 default:
@@ -199,7 +206,7 @@ public class Main {
         } catch (InvalidPathException e) {
             output(String.format("File not found.%n"));
         }
-
+        fileImportName = null;
     }
 
     private static void exportCards() {
@@ -219,6 +226,7 @@ public class Main {
             throw new RuntimeException(e);
         }
         output(String.format("%d cards have been saved.%n", count));
+        fileExportName = null;
     }
 
     private static void ask() {
